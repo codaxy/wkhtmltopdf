@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata schemaVersion="2">
+    <id>Codaxy.WkHtmlToPdf</id>    
+    <title>Codaxy WKHtmlToPdf C# wrapper</title>
+    <version>0.5.0</version>
+    <authors>Codaxy</authors>
+    <description>Convert HTML to PDF using wkhtmltopdf and C#</description>
+	<projectUrl>https://github.com/codaxy/wkhtmltopdf</projectUrl>	
+   </metadata>
+</package>
