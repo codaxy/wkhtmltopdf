@@ -2,7 +2,7 @@ Codaxy.WkHtmlToPdf
 ------------------
 
 This is a small C# wrapper utility around wkhtmltopdf console tool.
-You can use it to easily convert your HTML report to PDF.
+You can use it to easily convert HTML reports to PDF.
 
 NuGet
 -----
