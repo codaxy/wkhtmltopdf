@@ -4,4 +4,5 @@
 bin
 obj
 packages/*/
-packages/*.nupkg
+NuGet/*.nupkg
+Nuget/*/
