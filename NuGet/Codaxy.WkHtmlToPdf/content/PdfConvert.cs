@@ -88,7 +88,7 @@ namespace Codaxy.WkHtmlToPdf
 
             StringBuilder paramsBuilder = new StringBuilder();
             paramsBuilder.Append("--page-size A4 ");
-            paramsBuilder.Append("--redirect-delay 0 ");
+            //paramsBuilder.Append("--redirect-delay 0 "); not available in latest version
 			if (!string.IsNullOrEmpty(document.HeaderUrl))
             {
 				paramsBuilder.AppendFormat("--header-html {0} ", document.HeaderUrl);
