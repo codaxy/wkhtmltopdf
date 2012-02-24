@@ -50,7 +50,7 @@ namespace Codaxy.WkHtmlToPdf
 				if (_e == null)
 					_e = new PdfConvertEnvironment
 					{
-						TempFolderPath = System.Environment.CurrentDirectory,
+						TempFolderPath = Path.GetTempPath(),
 						WkHtmlToPdfPath = Path.Combine(OSUtil.GetProgramFilesx86Path(), @"wkhtmltopdf\wkhtmltopdf.exe"),
 						Timeout = 60000
 					};
@@ -122,14 +122,16 @@ namespace Codaxy.WkHtmlToPdf
 					if (!process.WaitForExit(environment.Timeout))
 						throw new PdfConvertTimeoutException();
 
-					if (process.ExitCode != 0)
-					{
-						var error = si.RedirectStandardError ? process.StandardError.ReadToEnd() : String.Format("Process exited with code {0}.", process.ExitCode);						
-						throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Wkhtmltopdf output: \r\n{1}", document.Url, error));
-					}
+                    if (!File.Exists(outputPdfFilePath))
+                    {
+                        if (process.ExitCode != 0)
+                        {
+                            var error = si.RedirectStandardError ? process.StandardError.ReadToEnd() : String.Format("Process exited with code {0}.", process.ExitCode);
+                            throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Wkhtmltopdf output: \r\n{1}", document.Url, error));
+                        }
 
-					if (!File.Exists(outputPdfFilePath))
-						throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Reason: Output file '{1}' not found.", document.Url, outputPdfFilePath));
+                        throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Reason: Output file '{1}' not found.", document.Url, outputPdfFilePath));
+                    }
 
 					if (woutput.OutputStream != null)
 					{
