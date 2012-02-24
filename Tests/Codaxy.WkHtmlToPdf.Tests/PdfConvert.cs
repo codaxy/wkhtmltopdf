@@ -50,7 +50,7 @@ namespace Codaxy.WkHtmlToPdf
 				if (_e == null)
 					_e = new PdfConvertEnvironment
 					{
-						TempFolderPath = System.Environment.CurrentDirectory,
+						TempFolderPath = Path.GetTempPath(),
 						WkHtmlToPdfPath = Path.Combine(OSUtil.GetProgramFilesx86Path(), @"wkhtmltopdf\wkhtmltopdf.exe"),
 						Timeout = 60000
 					};
