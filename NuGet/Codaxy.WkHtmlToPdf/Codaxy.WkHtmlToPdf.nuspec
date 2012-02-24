@@ -2,7 +2,7 @@
 <package>
   <metadata schemaVersion="2">
     <id>Codaxy.WkHtmlToPdf</id>    
-    <title>Codaxy WKHtmlToPdf C# wrapper</title>
+    <title>Codaxy WkHtmlToPdf C# wrapper</title>
     <version>0.5.2</version>
     <authors>Codaxy</authors>
     <description>Convert HTML to PDF using wkhtmltopdf and C#</description>
