@@ -26,6 +26,7 @@ namespace Codaxy.WkHtmlToPdf
 	public class PdfDocument
 	{
 		public String Url { get; set; }
+		public String Html { get; set; }
 		public String HeaderUrl { get; set; }
 		public String FooterUrl { get; set; }
 		public object State { get; set; }
@@ -65,6 +66,10 @@ namespace Codaxy.WkHtmlToPdf
 
 		public static void ConvertHtmlToPdf(PdfDocument document, PdfConvertEnvironment environment, PdfOutput woutput)
         {
+            if (document.Url == "-" && document.Html == null)
+                throw new PdfConvertException(
+                    String.Format("You must supply a HTML string, if you have enterd the url: {0}", document.Url)
+                );
 			if (environment == null)
 				environment = Environment;
 
@@ -103,7 +108,6 @@ namespace Codaxy.WkHtmlToPdf
             }
             
 			paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPdfFilePath);
-           
 
             si = new ProcessStartInfo();
             si.CreateNoWindow = !environment.Debug;
@@ -111,6 +115,7 @@ namespace Codaxy.WkHtmlToPdf
             si.Arguments = paramsBuilder.ToString();
             si.UseShellExecute = false;
             si.RedirectStandardError = !environment.Debug;
+            si.RedirectStandardInput = true;
 
 			try
 			{
@@ -118,7 +123,9 @@ namespace Codaxy.WkHtmlToPdf
 				{
 					process.StartInfo = si;
 					process.Start();
-
+                    if (document.Html != null)
+                        using (var stream = process.StandardInput)
+                            stream.Write(document.Html);
 					if (!process.WaitForExit(environment.Timeout))
 						throw new PdfConvertTimeoutException();
 
