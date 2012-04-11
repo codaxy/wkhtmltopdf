@@ -14,6 +14,10 @@ namespace Codaxy.WkHtmlToPdf.Tests
 			{
 				OutputFilePath = "codaxy.pdf"
 			});
+			PdfConvert.ConvertHtmlToPdf(new PdfDocument { Url = "-", Html = "<html><h1>test</h1></html>"}, new PdfOutput
+			{
+				OutputFilePath = "inline.pdf"
+			});
 		}
 	}
 }
