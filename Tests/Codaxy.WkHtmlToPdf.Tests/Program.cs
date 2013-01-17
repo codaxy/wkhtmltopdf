@@ -9,6 +9,8 @@ namespace Codaxy.WkHtmlToPdf.Tests
 	{
 		static void Main(string[] args)
 		{
+            Console.InputEncoding = Encoding.UTF8;
+
 			PdfConvert.Environment.Debug = true;
 			PdfConvert.ConvertHtmlToPdf(new PdfDocument { Url = "http://www.codaxy.com" }, new PdfOutput
 			{
@@ -18,6 +20,10 @@ namespace Codaxy.WkHtmlToPdf.Tests
 			{
 				OutputFilePath = "inline.pdf"
 			});
-		}
+            PdfConvert.ConvertHtmlToPdf(new PdfDocument { Url = "-", Html = "<html><h1>測試</h1></html>" }, new PdfOutput
+            {
+                OutputFilePath = "inline_cht.pdf"
+            });
+        }
 	}
 }

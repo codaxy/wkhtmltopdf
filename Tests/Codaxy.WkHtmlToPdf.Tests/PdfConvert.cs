@@ -125,8 +125,12 @@ namespace Codaxy.WkHtmlToPdf
 					process.Start();
                     if (document.Html != null)
                         using (var stream = process.StandardInput)
-                            stream.Write(document.Html);
-					if (!process.WaitForExit(environment.Timeout))
+                        {
+                            byte[] buffer = Encoding.UTF8.GetBytes(document.Html);
+                            stream.BaseStream.Write(buffer, 0, buffer.Length);
+                            stream.WriteLine();
+                        }
+                    if (!process.WaitForExit(environment.Timeout))
 						throw new PdfConvertTimeoutException();
 
                     if (!File.Exists(outputPdfFilePath))
