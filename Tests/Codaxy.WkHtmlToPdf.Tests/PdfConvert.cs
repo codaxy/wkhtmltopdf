@@ -52,12 +52,37 @@ namespace Codaxy.WkHtmlToPdf
 					_e = new PdfConvertEnvironment
 					{
 						TempFolderPath = Path.GetTempPath(),
-						WkHtmlToPdfPath = Path.Combine(OSUtil.GetProgramFilesx86Path(), @"wkhtmltopdf\wkhtmltopdf.exe"),
+						WkHtmlToPdfPath = GetWkhtmlToPdfExeLocation(),
 						Timeout = 60000
 					};
 				return _e;
 			}
 		}
+
+        private static string GetWkhtmlToPdfExeLocation()
+        {
+            string programFilesPath = System.Environment.GetEnvironmentVariable("ProgramFiles");
+            string filePath = Path.Combine(programFilesPath, @"wkhtmltopdf\wkhtmltopdf.exe");
+
+            if (File.Exists(filePath))
+                return filePath;
+            else
+            {
+                string programFilesx86Path = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+                filePath = Path.Combine(programFilesx86Path, @"wkhtmltopdf\wkhtmltopdf.exe");
+
+                if (File.Exists(filePath))
+                    return filePath;
+                else
+                {
+                    filePath = Path.Combine(programFilesPath, @"wkhtmltopdf\bin\wkhtmltopdf.exe");
+                    if (File.Exists(filePath))
+                        return filePath;
+                    else
+                        return Path.Combine(programFilesx86Path, @"wkhtmltopdf\bin\wkhtmltopdf.exe");
+                }
+            }
+        }
 
 		public static void ConvertHtmlToPdf(PdfDocument document, PdfOutput output)
 		{
@@ -170,17 +195,17 @@ namespace Codaxy.WkHtmlToPdf
         }
     }
 
-	class OSUtil
-	{
-		public static string GetProgramFilesx86Path()
-		{
-			if (8 == IntPtr.Size || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
-			{
-				return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-			}
-			return Environment.GetEnvironmentVariable("ProgramFiles");
-		}
-	}
+    //class OSUtil
+    //{
+    //    public static string GetProgramFilesx86Path()
+    //    {
+    //        if (8 == IntPtr.Size || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
+    //        {
+    //            return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+    //        }
+    //        return Environment.GetEnvironmentVariable("ProgramFiles");
+    //    }
+    //}
 
 	//public static class HttpResponseExtensions
 	//{
