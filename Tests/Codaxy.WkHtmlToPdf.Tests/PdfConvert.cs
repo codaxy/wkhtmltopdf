@@ -29,7 +29,12 @@ namespace Codaxy.WkHtmlToPdf
 		public String Html { get; set; }
 		public String HeaderUrl { get; set; }
 		public String FooterUrl { get; set; }
+        public String HeaderLeft { get; set; }
+        public String HeaderCenter { get; set; }
+        public String HeaderRight { get; set; }
+        public String FooterLeft { get; set; }
         public String FooterCenter { get; set; }
+        public String FooterRight { get; set; }
 		public object State { get; set; }
 	}
 
@@ -129,8 +134,23 @@ namespace Codaxy.WkHtmlToPdf
                 paramsBuilder.Append("--footer-spacing 5 ");
             }
 
+            if (!string.IsNullOrEmpty(document.HeaderLeft))
+                paramsBuilder.AppendFormat("--header-left \"{0}\" ", document.HeaderLeft);
+
             if (!string.IsNullOrEmpty(document.FooterCenter))
-                paramsBuilder.AppendFormat("--footer-center {0} ", document.FooterCenter);
+                paramsBuilder.AppendFormat("--header-center \"{0}\" ", document.HeaderCenter);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--header-right \"{0}\" ", document.HeaderRight);
+
+            if (!string.IsNullOrEmpty(document.FooterLeft))
+                paramsBuilder.AppendFormat("--footer-left \"{0}\" ", document.FooterLeft);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--footer-center \"{0}\" ", document.FooterCenter);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--footer-right \"{0}\" ", document.FooterRight);
             
 			paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPdfFilePath);
 
