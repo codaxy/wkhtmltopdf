@@ -29,6 +29,7 @@ namespace Codaxy.WkHtmlToPdf
 		public String Html { get; set; }
 		public String HeaderUrl { get; set; }
 		public String FooterUrl { get; set; }
+        public String FooterCenter { get; set; }
 		public object State { get; set; }
 	}
 
@@ -127,6 +128,9 @@ namespace Codaxy.WkHtmlToPdf
                 paramsBuilder.Append("--margin-bottom 25 ");
                 paramsBuilder.Append("--footer-spacing 5 ");
             }
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--footer-center {0} ", document.FooterCenter);
             
 			paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPdfFilePath);
 

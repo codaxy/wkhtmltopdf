@@ -12,7 +12,7 @@ namespace Codaxy.WkHtmlToPdf.Tests
             Console.InputEncoding = Encoding.UTF8;
 
 			PdfConvert.Environment.Debug = true;
-			PdfConvert.ConvertHtmlToPdf(new PdfDocument { Url = "http://www.codaxy.com" }, new PdfOutput
+			PdfConvert.ConvertHtmlToPdf(new PdfDocument { Url = "http://www.codaxy.com", FooterCenter = "[page]/[topage]" }, new PdfOutput
 			{
 				OutputFilePath = "codaxy.pdf"
 			});
