@@ -29,6 +29,12 @@ namespace Codaxy.WkHtmlToPdf
 		public String Html { get; set; }
 		public String HeaderUrl { get; set; }
 		public String FooterUrl { get; set; }
+        public String HeaderLeft { get; set; }
+        public String HeaderCenter { get; set; }
+        public String HeaderRight { get; set; }
+        public String FooterLeft { get; set; }
+        public String FooterCenter { get; set; }
+        public String FooterRight { get; set; }
 		public object State { get; set; }
 	}
 
@@ -52,12 +58,33 @@ namespace Codaxy.WkHtmlToPdf
 					_e = new PdfConvertEnvironment
 					{
 						TempFolderPath = Path.GetTempPath(),
-						WkHtmlToPdfPath = Path.Combine(OSUtil.GetProgramFilesx86Path(), @"wkhtmltopdf\wkhtmltopdf.exe"),
+						WkHtmlToPdfPath = GetWkhtmlToPdfExeLocation(),
 						Timeout = 60000
 					};
 				return _e;
 			}
 		}
+
+        private static string GetWkhtmlToPdfExeLocation()
+        {
+            string programFilesPath = System.Environment.GetEnvironmentVariable("ProgramFiles");
+            string filePath = Path.Combine(programFilesPath, @"wkhtmltopdf\wkhtmltopdf.exe");
+
+            if (File.Exists(filePath))
+                return filePath;
+
+            string programFilesx86Path = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+            filePath = Path.Combine(programFilesx86Path, @"wkhtmltopdf\wkhtmltopdf.exe");
+
+            if (File.Exists(filePath))
+                return filePath;
+
+            filePath = Path.Combine(programFilesPath, @"wkhtmltopdf\bin\wkhtmltopdf.exe");
+            if (File.Exists(filePath))
+                return filePath;
+
+            return Path.Combine(programFilesx86Path, @"wkhtmltopdf\bin\wkhtmltopdf.exe");
+        }
 
 		public static void ConvertHtmlToPdf(PdfDocument document, PdfOutput output)
 		{
@@ -106,6 +133,24 @@ namespace Codaxy.WkHtmlToPdf
                 paramsBuilder.Append("--margin-bottom 25 ");
                 paramsBuilder.Append("--footer-spacing 5 ");
             }
+
+            if (!string.IsNullOrEmpty(document.HeaderLeft))
+                paramsBuilder.AppendFormat("--header-left \"{0}\" ", document.HeaderLeft);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--header-center \"{0}\" ", document.HeaderCenter);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--header-right \"{0}\" ", document.HeaderRight);
+
+            if (!string.IsNullOrEmpty(document.FooterLeft))
+                paramsBuilder.AppendFormat("--footer-left \"{0}\" ", document.FooterLeft);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--footer-center \"{0}\" ", document.FooterCenter);
+
+            if (!string.IsNullOrEmpty(document.FooterCenter))
+                paramsBuilder.AppendFormat("--footer-right \"{0}\" ", document.FooterRight);
             
 			paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPdfFilePath);
 
@@ -170,17 +215,17 @@ namespace Codaxy.WkHtmlToPdf
         }
     }
 
-	class OSUtil
-	{
-		public static string GetProgramFilesx86Path()
-		{
-			if (8 == IntPtr.Size || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
-			{
-				return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-			}
-			return Environment.GetEnvironmentVariable("ProgramFiles");
-		}
-	}
+    //class OSUtil
+    //{
+    //    public static string GetProgramFilesx86Path()
+    //    {
+    //        if (8 == IntPtr.Size || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
+    //        {
+    //            return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+    //        }
+    //        return Environment.GetEnvironmentVariable("ProgramFiles");
+    //    }
+    //}
 
 	//public static class HttpResponseExtensions
 	//{
