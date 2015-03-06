@@ -7,6 +7,9 @@ You can use it to easily convert HTML reports to PDF.
 NuGet
 -----
 NuGet includes single source file in your project.
+```
+Install-Package Codaxy.WkHtmlToPdf
+```
 
 Licence
 -------
