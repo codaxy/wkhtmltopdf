@@ -10,7 +10,21 @@ NuGet includes single source file in your project.
 ```
 Install-Package Codaxy.WkHtmlToPdf
 ```
+Usage
+-----
+```
+PdfConvert.ConvertHtmlToPdf(new PdfDocument 
+{ 
+    Url = "http://wkhtmltopdf.org/",
+    HeaderLeft = "[title]",
+    HeaderRight = "[date] [time]",
+    FooterCenter = "Page [page] of [topage]"
 
+}, new PdfOutput 
+{
+    OutputFilePath = "wkhtmltopdf-page.pdf"
+});
+```
 Licence
 -------
 This project is available under MIT Licence.
