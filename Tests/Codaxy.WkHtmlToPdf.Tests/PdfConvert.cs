@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.IO;
 using System.Web;
+using System.Threading;
 
 namespace Codaxy.WkHtmlToPdf
 {
@@ -97,6 +98,7 @@ namespace Codaxy.WkHtmlToPdf
                 throw new PdfConvertException(
                     String.Format("You must supply a HTML string, if you have enterd the url: {0}", document.Url)
                 );
+
 			if (environment == null)
 				environment = Environment;
 
@@ -115,12 +117,10 @@ namespace Codaxy.WkHtmlToPdf
 
 			if (!File.Exists(environment.WkHtmlToPdfPath))
 				throw new PdfConvertException(String.Format("File '{0}' not found. Check if wkhtmltopdf application is installed.", environment.WkHtmlToPdfPath));
-
-            ProcessStartInfo si;
-
+            
             StringBuilder paramsBuilder = new StringBuilder();
             paramsBuilder.Append("--page-size A4 ");
-            //paramsBuilder.Append("--redirect-delay 0 "); not available in latest version
+            
 			if (!string.IsNullOrEmpty(document.HeaderUrl))
             {
 				paramsBuilder.AppendFormat("--header-html {0} ", document.HeaderUrl);
@@ -153,66 +153,117 @@ namespace Codaxy.WkHtmlToPdf
                 paramsBuilder.AppendFormat("--footer-right \"{0}\" ", document.FooterRight);
             
 			paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPdfFilePath);
+            
+            try
+            {
+                StringBuilder output = new StringBuilder();
+                StringBuilder error = new StringBuilder();
 
-            si = new ProcessStartInfo();
-            si.CreateNoWindow = !environment.Debug;
-			si.FileName = environment.WkHtmlToPdfPath;
-            si.Arguments = paramsBuilder.ToString();
-            si.UseShellExecute = false;
-            si.RedirectStandardError = !environment.Debug;
-            si.RedirectStandardInput = true;
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = environment.WkHtmlToPdfPath;
+                    process.StartInfo.Arguments = paramsBuilder.ToString();
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                    process.StartInfo.RedirectStandardInput = true;
 
-			try
-			{
-				using (var process = new Process())
-				{
-					process.StartInfo = si;
-					process.Start();
-                    if (document.Html != null)
-                        using (var stream = process.StandardInput)
-                        {
-                            byte[] buffer = Encoding.UTF8.GetBytes(document.Html);
-                            stream.BaseStream.Write(buffer, 0, buffer.Length);
-                            stream.WriteLine();
-                        }
-                    if (!process.WaitForExit(environment.Timeout))
-						throw new PdfConvertTimeoutException();
-
-                    if (!File.Exists(outputPdfFilePath))
+                    using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
+                    using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
                     {
-                        if (process.ExitCode != 0)
+                        DataReceivedEventHandler outputHandler = (sender, e) =>
                         {
-                            var error = si.RedirectStandardError ? process.StandardError.ReadToEnd() : String.Format("Process exited with code {0}.", process.ExitCode);
-                            throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Wkhtmltopdf output: \r\n{1}", document.Url, error));
+                            if (e.Data == null)
+                            {
+                                outputWaitHandle.Set();
+                            }
+                            else
+                            {
+                                output.AppendLine(e.Data);
+                            }
+                        };
+
+                        DataReceivedEventHandler errorHandler = (sender, e) =>
+                        {
+                            if (e.Data == null)
+                            {
+                                errorWaitHandle.Set();
+                            }
+                            else
+                            {
+                                error.AppendLine(e.Data);
+                            }
+                        };
+
+                        process.OutputDataReceived += outputHandler;
+                        process.ErrorDataReceived += errorHandler;
+
+                        try
+                        {
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+
+                            if (document.Html != null)
+                            {
+                                using (var stream = process.StandardInput)
+                                {
+                                    byte[] buffer = Encoding.UTF8.GetBytes(document.Html);
+                                    stream.BaseStream.Write(buffer, 0, buffer.Length);
+                                    stream.WriteLine();
+                                }
+                            }
+
+                            if (process.WaitForExit(environment.Timeout) && outputWaitHandle.WaitOne(environment.Timeout) && errorWaitHandle.WaitOne(environment.Timeout))
+                            {
+                                if (process.ExitCode != 0 && !File.Exists(outputPdfFilePath))
+                                {
+                                    throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Wkhtmltopdf output: \r\n{1}", document.Url, error));
+                                }
+                            }
+                            else
+                            {
+                                if (!process.HasExited)
+                                    process.Kill();
+
+                                throw new PdfConvertTimeoutException();
+                            }
                         }
-
-                        throw new PdfConvertException(String.Format("Html to PDF conversion of '{0}' failed. Reason: Output file '{1}' not found.", document.Url, outputPdfFilePath));
+                        finally
+                        {
+                            process.OutputDataReceived -= outputHandler;
+                            process.ErrorDataReceived -= errorHandler;
+                        }
                     }
+                }
 
-					if (woutput.OutputStream != null)
-					{
-						using (Stream fs = new FileStream(outputPdfFilePath, FileMode.Open))
-						{
-							byte[] buffer = new byte[32 * 1024];
-							int read;
 
-							while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
-								woutput.OutputStream.Write(buffer, 0, read);
-						}
-					}
+                if (woutput.OutputStream != null)
+                {
+                    using (Stream fs = new FileStream(outputPdfFilePath, FileMode.Open))
+                    {
+                        byte[] buffer = new byte[32 * 1024];
+                        int read;
 
-					if (woutput.OutputCallback != null)
-					{
-						woutput.OutputCallback(document, File.ReadAllBytes(outputPdfFilePath));
-					}
-				}
-			}
-			finally
-			{
-				if (delete && File.Exists(outputPdfFilePath))
-					File.Delete(outputPdfFilePath);
-			}
-        }
+                        while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
+                            woutput.OutputStream.Write(buffer, 0, read);
+                    }
+                }
+
+                if (woutput.OutputCallback != null)
+                {
+                    byte[] pdfFileBytes = File.ReadAllBytes(outputPdfFilePath);
+                    woutput.OutputCallback(document, pdfFileBytes);
+                }
+
+            }            
+            finally
+            {
+                if (delete && File.Exists(outputPdfFilePath))
+                    File.Delete(outputPdfFilePath);
+            }
+        }        
     }
 
     //class OSUtil
