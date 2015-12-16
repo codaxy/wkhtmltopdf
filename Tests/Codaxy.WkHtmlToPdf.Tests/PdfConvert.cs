@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Web;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Codaxy.WkHtmlToPdf
 {
@@ -37,7 +38,9 @@ namespace Codaxy.WkHtmlToPdf
         public String FooterCenter { get; set; }
         public String FooterRight { get; set; }
 		public object State { get; set; }
-	}
+        public Dictionary<String, String> Cookies { get; set; }
+        public Dictionary<String, String> ExtraParams { get; set; }
+    }
 
 	public class PdfConvertEnvironment
 	{
@@ -151,7 +154,15 @@ namespace Codaxy.WkHtmlToPdf
 
             if (!string.IsNullOrEmpty(document.FooterCenter))
                 paramsBuilder.AppendFormat("--footer-right \"{0}\" ", document.FooterRight);
-            
+
+            if(document.ExtraParams != null)
+                foreach (var extraParam in document.ExtraParams)
+                    paramsBuilder.AppendFormat("--{0} {1} ", extraParam.Key, extraParam.Value);
+
+            if (document.Cookies != null)
+                foreach (var cookie in document.Cookies)
+                    paramsBuilder.AppendFormat("--cookie {0} {1} ", cookie.Key, cookie.Value);
+
 			paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPdfFilePath);
             
             try
