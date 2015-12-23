@@ -108,7 +108,7 @@ namespace Codaxy.WkHtmlToPdf
         /// <summary>
         /// The path to store the processed files temporarily
         /// </summary>
-        public string TempPath { get; set; }
+        public string TempFolderPath  { get; set; }
         /// <summary>
         /// The path to the wkhtmltopdf executable file.
         /// </summary>
@@ -140,7 +140,7 @@ namespace Codaxy.WkHtmlToPdf
                 if (_e == null)
                     _e = new PdfConvertEnvironment
                     {
-                        TempPath = Path.GetTempPath(),
+                        TempFolderPath  = Path.GetTempPath(),
                         WkHtmlToPdfPath = GetWkhtmlToPdfExeLocation(),
                         Timeout = 60000
                     };
@@ -246,7 +246,7 @@ namespace Codaxy.WkHtmlToPdf
 
             string PdfOutputPath;
             if (woutput.OutputFilePath == null)
-                PdfOutputPath = Path.Combine(Environment.TempPath, Path.GetRandomFileName());
+                PdfOutputPath = Path.Combine(Environment.TempFolderPath , Path.GetRandomFileName());
             else
                 PdfOutputPath = woutput.OutputFilePath;
 
