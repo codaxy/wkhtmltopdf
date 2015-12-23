@@ -251,9 +251,9 @@ namespace Codaxy.WkHtmlToPdf
                 PdfOutputPath = woutput.OutputFilePath;
 
             if (document.Url != null)
-                paramsBuilder.AppendFormat("\"{0}\" {1}", document.Url, PdfOutputPath);
+                paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, PdfOutputPath);
             else
-                paramsBuilder.AppendFormat("- {0}", PdfOutputPath);
+                paramsBuilder.AppendFormat("- \"{0}\"", PdfOutputPath);
 
 
             StringBuilder error = new StringBuilder();
@@ -277,7 +277,6 @@ namespace Codaxy.WkHtmlToPdf
                         else
                         {
                             error.AppendLine(e.Data);
-                            Console.WriteLine(e.Data);
                         }
                     };
 
@@ -291,7 +290,7 @@ namespace Codaxy.WkHtmlToPdf
 
                         if (document.Html != null)
                             using (var stream = process.StandardInput)
-                                stream.Write(Encoding.UTF8.GetBytes(document.Html));
+                                stream.Write(document.Html);
 
                         if (process.WaitForExit(environment.Timeout) && errorWaitHandle.WaitOne())
                         {
