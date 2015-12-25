@@ -274,7 +274,12 @@ namespace Codaxy.WkHtmlToPdf
                 if (delete && File.Exists(outputPdfFilePath))
                     File.Delete(outputPdfFilePath);
             }
-        }        
+        }
+
+        internal static void ConvertHtmlToPdf(string url, string outputFilePath)
+        {
+            ConvertHtmlToPdf(new PdfDocument { Url = url }, new PdfOutput { OutputFilePath = outputFilePath });
+        }
     }
 
     //class OSUtil

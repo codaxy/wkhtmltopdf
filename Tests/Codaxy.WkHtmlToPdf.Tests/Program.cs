@@ -11,7 +11,7 @@ namespace Codaxy.WkHtmlToPdf.Tests
 		{
             Console.InputEncoding = Encoding.UTF8;
 
-			PdfConvert.Environment.Debug = true;
+			PdfConvert.Environment.Debug = false;
 			PdfConvert.ConvertHtmlToPdf(new PdfDocument { Url = "http://www.codaxy.com" }, new PdfOutput
 			{
 				OutputFilePath = "codaxy.pdf"
@@ -35,6 +35,9 @@ namespace Codaxy.WkHtmlToPdf.Tests
             {
                 OutputFilePath = "inline_cht.pdf"
             });
+
+
+            //PdfConvert.ConvertHtmlToPdf("http://tweakers.net", "tweakers.pdf");
         }
 	}
 }
