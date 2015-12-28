@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Codaxy.WkHtmlToPdf
 {
@@ -218,7 +219,7 @@ namespace Codaxy.WkHtmlToPdf
 
             if (document.Cookies != null)
                 foreach (var cookie in document.Cookies)
-                    paramsBuilder.AppendFormat("--cookie {0} {1} ", cookie.Key, cookie.Value);
+                    paramsBuilder.AppendFormat("--cookie {0} {1} ", cookie.Key, HttpUtility.UrlEncode(cookie.Value));
 
             if (!IsEmptyUrl(document.Url))
                 paramsBuilder.AppendFormat("\"{0}\" \"{1}\"", document.Url, outputPath);
