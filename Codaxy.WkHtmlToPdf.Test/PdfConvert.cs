@@ -128,8 +128,6 @@ namespace Codaxy.WkHtmlToPdf
     /// </summary>
     public class PdfConvert
     {
-        private const short BUFFER_SIZE = 4096;
-
         private static PdfConvertEnvironment _e;
 
         /// <summary>
@@ -253,6 +251,12 @@ namespace Codaxy.WkHtmlToPdf
                         document.Url)
                 );
 
+            if (!IsEmptyUrl(document.Url))
+                if (!Uri.IsWellFormedUriString(document.Url, UriKind.Absolute))
+                    throw new PdfConvertException(
+                        String.Format("This is not a valid url: {0}", document.Url)
+                    );
+
             if (environment == null)
                 environment = Environment;
 
@@ -262,26 +266,24 @@ namespace Codaxy.WkHtmlToPdf
                         environment.WkHtmlToPdfPath));
 
             string PdfOutputPath;
-            if (woutput.OutputFilePath == null)
-                PdfOutputPath = Path.Combine(Environment.TempFolderPath, Path.GetRandomFileName());
+            if (string.IsNullOrEmpty(woutput.OutputFilePath))
+                PdfOutputPath = Path.Combine(Environment.TempFolderPath, Guid.NewGuid().ToString());
             else
                 PdfOutputPath = woutput.OutputFilePath;
 
             var error = new StringBuilder();
 
-            using (var output = new MemoryStream())
             using (Process process = new Process())
             {
                 process.StartInfo.FileName = environment.WkHtmlToPdfPath;
                 process.StartInfo.Arguments = BuildParams(document, PdfOutputPath);
                 process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.RedirectStandardInput = true;
 
                 using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
                 {
-                    DataReceivedEventHandler errorHandler = (sender, e) =>
+                    process.ErrorDataReceived += (DataReceivedEventHandler)((sender, e) =>
                     {
                         if (e.Data == null)
                             errorWaitHandle.Set();
@@ -289,9 +291,7 @@ namespace Codaxy.WkHtmlToPdf
                         {
                             error.AppendLine(e.Data);
                         }
-                    };
-
-                    process.ErrorDataReceived += errorHandler;
+                    });
                     process.Start();
                     process.BeginErrorReadLine();
 
@@ -299,7 +299,7 @@ namespace Codaxy.WkHtmlToPdf
                         using (var stream = process.StandardInput)
                             stream.Write(document.Html);
 
-                    if (process.WaitForExit(environment.Timeout) && errorWaitHandle.WaitOne())
+                    if (process.WaitForExit(environment.Timeout) && errorWaitHandle.WaitOne(environment.Timeout))
                     {
                         if (process.ExitCode != 0)
                             throw new PdfConvertException(
@@ -309,18 +309,12 @@ namespace Codaxy.WkHtmlToPdf
                         {
                             if (woutput.OutputStream != null || woutput.OutputCallback != null)
                             {
-                                int read;
-                                byte[] buff = new byte[BUFFER_SIZE];
-                                using (var fs = new FileStream(PdfOutputPath, FileMode.Open))
-                                    while ((read = fs.Read(buff, 0, BUFFER_SIZE)) > 0)
-                                        output.Write(buff, 0, read);
+                                byte[] buff = File.ReadAllBytes(PdfOutputPath);
 
-                                output.Position = 0;
                                 if (woutput.OutputStream != null)
-                                    while ((read = output.Read(buff, 0, BUFFER_SIZE)) > 0)
-                                        woutput.OutputStream.Write(buff, 0, read);
+                                    woutput.OutputStream.Write(buff, 0, buff.Length);
                                 if (woutput.OutputCallback != null)
-                                    woutput.OutputCallback(document, output.ToArray());
+                                    woutput.OutputCallback(document, buff);
                             }
                         }
                     }
@@ -332,7 +326,6 @@ namespace Codaxy.WkHtmlToPdf
                         throw new PdfConvertTimeoutException();
                     }
 
-                    process.ErrorDataReceived -= errorHandler;
                     if (woutput.OutputFilePath == null)
                         File.Delete(PdfOutputPath);
                 }
