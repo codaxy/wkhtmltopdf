@@ -1,23 +1,31 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codaxy.WkHtmlToPdf.Tests", "Tests\Codaxy.WkHtmlToPdf.Tests\Codaxy.WkHtmlToPdf.Tests.csproj", "{B4A95187-8886-45CE-8978-0BB8CF4D6822}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{8C643516-2362-4669-B73A-53AEC8298E0E}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Codaxy.WkHtmlToPdf\Codaxy.WkHtmlToPdf.nuspec = NuGet\Codaxy.WkHtmlToPdf\Codaxy.WkHtmlToPdf.nuspec
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codaxy.WkHtmlToPdf.Tests", "Codaxy.WkHtmlToPdf.Test\Codaxy.WkHtmlToPdf.Tests.csproj", "{48243958-609E-4999-B241-14B92609634E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B4A95187-8886-45CE-8978-0BB8CF4D6822}.Debug|x86.ActiveCfg = Debug|x86
-		{B4A95187-8886-45CE-8978-0BB8CF4D6822}.Debug|x86.Build.0 = Debug|x86
-		{B4A95187-8886-45CE-8978-0BB8CF4D6822}.Release|x86.ActiveCfg = Release|x86
-		{B4A95187-8886-45CE-8978-0BB8CF4D6822}.Release|x86.Build.0 = Release|x86
+		{48243958-609E-4999-B241-14B92609634E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Debug|x86.Build.0 = Debug|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Release|x86.ActiveCfg = Release|Any CPU
+		{48243958-609E-4999-B241-14B92609634E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
