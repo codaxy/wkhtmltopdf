@@ -140,10 +140,10 @@ namespace Codaxy.WkHtmlToPdf
             if (!string.IsNullOrEmpty(document.HeaderLeft))
                 paramsBuilder.AppendFormat("--header-left \"{0}\" ", document.HeaderLeft);
 
-            if (!string.IsNullOrEmpty(document.FooterCenter))
+            if (!string.IsNullOrEmpty(document.HeaderCenter))
                 paramsBuilder.AppendFormat("--header-center \"{0}\" ", document.HeaderCenter);
 
-            if (!string.IsNullOrEmpty(document.FooterCenter))
+            if (!string.IsNullOrEmpty(document.HeaderRight))
                 paramsBuilder.AppendFormat("--header-right \"{0}\" ", document.HeaderRight);
 
             if (!string.IsNullOrEmpty(document.FooterLeft))
@@ -152,7 +152,7 @@ namespace Codaxy.WkHtmlToPdf
             if (!string.IsNullOrEmpty(document.FooterCenter))
                 paramsBuilder.AppendFormat("--footer-center \"{0}\" ", document.FooterCenter);
 
-            if (!string.IsNullOrEmpty(document.FooterCenter))
+            if (!string.IsNullOrEmpty(document.FooterRight))
                 paramsBuilder.AppendFormat("--footer-right \"{0}\" ", document.FooterRight);
 
             if(document.ExtraParams != null)
