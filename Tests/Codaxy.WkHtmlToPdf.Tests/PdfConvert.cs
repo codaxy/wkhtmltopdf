@@ -5,6 +5,7 @@ using System.IO;
 using System.Web;
 using System.Threading;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace Codaxy.WkHtmlToPdf
 {
@@ -71,8 +72,14 @@ namespace Codaxy.WkHtmlToPdf
 
         private static string GetWkhtmlToPdfExeLocation()
         {
+            string customPath = ConfigurationManager.AppSettings["wkhtmltopdf:path"];
+            string filePath = Path.Combine(customPath, @"wkhtmltopdf.exe");
+
+            if (File.Exists(filePath))
+                return filePath;
+
             string programFilesPath = System.Environment.GetEnvironmentVariable("ProgramFiles");
-            string filePath = Path.Combine(programFilesPath, @"wkhtmltopdf\wkhtmltopdf.exe");
+            filePath = Path.Combine(programFilesPath, @"wkhtmltopdf\wkhtmltopdf.exe");
 
             if (File.Exists(filePath))
                 return filePath;
