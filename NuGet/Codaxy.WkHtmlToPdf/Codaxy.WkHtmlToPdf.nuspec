@@ -7,5 +7,8 @@
     <authors>Codaxy</authors>
     <description>Convert HTML to PDF using wkhtmltopdf and C#</description>
 	<projectUrl>https://github.com/codaxy/wkhtmltopdf</projectUrl>	
+	  <frameworkAssemblies>
+    		<frameworkAssembly assemblyName="System.Configuration"  />
+	  </frameworkAssemblies>
    </metadata>
 </package>
