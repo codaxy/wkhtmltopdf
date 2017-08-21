@@ -22,7 +22,11 @@ namespace Codaxy.WkHtmlToPdf.Tests
                 Url = "http://www.codaxy.com",
                 HeaderLeft = "[title]",
                 HeaderRight = "[date] [time]",
-                FooterCenter = "Page [page] of [topage]"
+                FooterCenter = "Page [page] of [topage]",
+                FooterFontSize = "10",
+                HeaderFontSize = "20",
+                HeaderFontName = "Comic Sans MS",
+                FooterFontName = "Helvetica"
 
             }, new PdfOutput
             {
