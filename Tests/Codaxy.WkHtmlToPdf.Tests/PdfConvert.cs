@@ -9,6 +9,77 @@ using System.Configuration;
 
 namespace Codaxy.WkHtmlToPdf
 {
+   public static class PaperTypes
+   {
+      public static readonly List<string> ValidSizes = new List<string> {
+            "A0",
+            "A1",
+            "A2",
+            "A3",
+            "A4",
+            "A5",
+            "A6",
+            "A7",
+            "A8",
+            "A9",
+            "B0",
+            "B1",
+            "B10",
+            "B2",
+            "B3",
+            "B4",
+            "B5",
+            "B6",
+            "B7",
+            "B8",
+            "B9",
+            "C5E",
+            "Comm10E",
+            "DLE",
+            "Executive",
+            "Folio",
+            "Ledger",
+            "Legal",
+            "Letter",
+            "Tabloid"
+      };
+
+      public static string A0 = "A0";
+      public static string A1 = "A1";
+      public static string A2 = "A2";
+      public static string A3 = "A3";
+      public static string A4 = "A4";
+      public static string A5 = "A5";
+      public static string A6 = "A6";
+      public static string A7 = "A7";
+      public static string A8 = "A8";
+      public static string A9 = "A9";
+      public static string B0 = "B0";
+      public static string B1 = "B1";
+      public static string B10 = "B10";
+      public static string B2 = "B2";
+      public static string B3 = "B3";
+      public static string B4 = "B4";
+      public static string B5 = "B5";
+      public static string B6 = "B6";
+      public static string B7 = "B7";
+      public static string B8 = "B8";
+      public static string B9 = "B9";
+      public static string C5E = "C5E";
+      public static string Comm10E = "Comm10E";
+      public static string DLE = "DLE";
+      public static string Executive = "Executive";
+      public static string Folio = "Folio";
+      public static string Ledger = "Ledger";
+      public static string Legal = "Legal";
+      public static string Letter = "Letter";
+      public static string Tabloid = "Tabloid";
+
+      public static bool isValidPaperType(string test)
+      {
+         return ValidSizes.Contains(test);
+      }
+    }
     public class PdfConvertException : Exception
     {
         public PdfConvertException(String msg) : base(msg) { }
@@ -24,6 +95,7 @@ namespace Codaxy.WkHtmlToPdf
         public String OutputFilePath { get; set; }
         public Stream OutputStream { get; set; }
         public Action<PdfDocument, byte[]> OutputCallback { get; set; }
+        public String PaperType { get; set; }
     }
 
     public class PdfDocument
@@ -135,7 +207,10 @@ namespace Codaxy.WkHtmlToPdf
                 throw new PdfConvertException(String.Format("File '{0}' not found. Check if wkhtmltopdf application is installed.", environment.WkHtmlToPdfPath));
 
             StringBuilder paramsBuilder = new StringBuilder();
-            paramsBuilder.Append("--page-size A4 ");
+
+            if (String.IsNullOrEmpty(woutput.PaperType) || !PaperTypes.isValidPaperType(woutput.PaperType))
+               woutput.PaperType = PaperTypes.A4;
+            paramsBuilder.AppendFormat("--page-size {0} ", woutput.PaperType);
 
             if (!string.IsNullOrEmpty(document.HeaderUrl))
             {
