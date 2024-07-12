@@ -1,3 +1,5 @@
+**This project is no longer maintained. For advanced PDF reporting please take a look at [CxReports](https://www.cx-reports.com/)**
+
 Codaxy.WkHtmlToPdf
 ------------------
 
